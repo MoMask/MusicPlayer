@@ -18,6 +18,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,20 +30,20 @@ public class MainActivity extends AppCompatActivity {
     private boolean isPlay;
     private List<MusicBean> musicBeanList = new ArrayList<>();
     public static final int CODE_FOR_WRITE_PERMISSION = 10001;
+    private MusicDataAdapter musicDataAdapter;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mRecycleView = findViewById(R.id.rv_content);
-        mIvPlay = findViewById(R.id.iv_play);
-        mIvLastSong = findViewById(R.id.iv_last_song);
-        mIvNextSong = findViewById(R.id.iv_next_song);
-
+        initView();
         initEven();
+        checkPermission();
+    }
 
-        //检查一下是否有权限
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void checkPermission() {
         int hasWriteContactsPermission = checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
         if (hasWriteContactsPermission != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
@@ -50,8 +51,17 @@ public class MainActivity extends AppCompatActivity {
         } else {
             getSongList(this);
         }
+    }
 
-
+    private void initView() {
+        mRecycleView = findViewById(R.id.rv_content);
+        mIvPlay = findViewById(R.id.iv_play);
+        mIvLastSong = findViewById(R.id.iv_last_song);
+        mIvNextSong = findViewById(R.id.iv_next_song);
+        musicDataAdapter = new MusicDataAdapter();
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
+        mRecycleView.setLayoutManager(linearLayoutManager);
+        mRecycleView.setAdapter(musicDataAdapter);
     }
 
     private void initEven() {
@@ -114,5 +124,6 @@ public class MainActivity extends AppCompatActivity {
                     cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)),
                     cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA))));
         }
+        musicDataAdapter.setData(musicBeanList);
     }
 }
