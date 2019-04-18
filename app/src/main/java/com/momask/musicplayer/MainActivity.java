@@ -1,4 +1,5 @@
 package com.momask.musicplayer;
+
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -36,5 +37,20 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        mIvLastSong.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        mIvNextSong.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
     }
 }
