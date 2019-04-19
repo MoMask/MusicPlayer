@@ -6,11 +6,20 @@ public class MusicBean {
     private String musicName;
     private String artist;
     private String data;
+    private boolean autoPlay;
 
     public MusicBean(String musicName, String artist, String data) {
         this.musicName = musicName;
         this.artist = artist;
         this.data = data;
+    }
+
+    public void setAutoPlay(boolean autoPlay) {
+        this.autoPlay = autoPlay;
+    }
+
+    public boolean getAutoPlay() {
+        return autoPlay;
     }
 
     public String getArtist() {

@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         mIvNextSong = findViewById(R.id.iv_next_song);
         swipeRefreshLayout = findViewById(R.id.srl_content);
         musicDataAdapter = new MusicDataAdapter();
+        musicDataAdapter.setContext(this);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         mRecycleView.setLayoutManager(linearLayoutManager);
         mRecycleView.setAdapter(musicDataAdapter);
@@ -77,27 +78,43 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         mIvPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                isPlay = !isPlay;
-                if (isPlay) {
-                    //暂停
-                    mIvPlay.setImageDrawable(getResources().getDrawable(R.mipmap.icon_test_1));
+                if (musicBeanList.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "无可播放的数据源", Toast.LENGTH_SHORT).show();
                 } else {
-                    //播放
-                    mIvPlay.setImageDrawable(getResources().getDrawable(R.mipmap.icon_test_2));
+                    isPlay = !isPlay;
+                    mIvPlay.setImageDrawable(getResources().getDrawable(isPlay ? R.mipmap.icon_test_1 : R.mipmap.icon_test_2));
                 }
+
             }
         });
 
         mIvLastSong.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (musicBeanList.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "无可播放的数据源", Toast.LENGTH_SHORT).show();
+                } else {
 
+                }
             }
         });
 
         mIvNextSong.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (musicBeanList.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "无可播放的数据源", Toast.LENGTH_SHORT).show();
+                } else {
+
+                }
+            }
+        });
+
+
+        musicDataAdapter.setOnItemClickListener(new MusicDataAdapter.ClickCallBack() {
+            @Override
+            public void onClick(MusicBean musicBean, int position) {
+                //点击播放
 
             }
         });
