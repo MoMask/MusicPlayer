@@ -2,11 +2,15 @@ package com.momask.musicplayer;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ImageView;
@@ -20,8 +24,9 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
 
     private RecyclerView mRecycleView;
     private ImageView mIvPlay;
@@ -31,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
     private List<MusicBean> musicBeanList = new ArrayList<>();
     public static final int CODE_FOR_WRITE_PERMISSION = 10001;
     private MusicDataAdapter musicDataAdapter;
+    private MessageHandler handler = new MessageHandler();
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -58,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         mIvPlay = findViewById(R.id.iv_play);
         mIvLastSong = findViewById(R.id.iv_last_song);
         mIvNextSong = findViewById(R.id.iv_next_song);
+        swipeRefreshLayout = findViewById(R.id.srl_content);
         musicDataAdapter = new MusicDataAdapter();
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         mRecycleView.setLayoutManager(linearLayoutManager);
@@ -65,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initEven() {
+        swipeRefreshLayout.setOnRefreshListener(this);
         mIvPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -124,6 +133,46 @@ public class MainActivity extends AppCompatActivity {
                     cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)),
                     cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA))));
         }
+        swipeRefreshLayout.setRefreshing(false);
+        if (musicBeanList.size() == 0) {
+            Toast.makeText(this, "无音频数据", Toast.LENGTH_SHORT).show();
+        }
         musicDataAdapter.setData(musicBeanList);
+    }
+
+
+    private void startMusicService(int option, String path) {
+        Intent intentService = new Intent(MainActivity.this, PlayerService.class);
+        intentService.putExtra("option", option);
+        intentService.putExtra("messenger", new Messenger(handler));
+        intentService.putExtra("path", path);
+        startService(intentService);
+    }
+
+    private void startMusicService(int option) {
+        Intent intentService = new Intent(MainActivity.this, PlayerService.class);
+        intentService.putExtra("option", option);
+        intentService.putExtra("messenger", new Messenger(handler));
+        startService(intentService);
+    }
+
+    private void startMusicService(int option, int progress) {
+        Intent intentService = new Intent(MainActivity.this, PlayerService.class);
+        intentService.putExtra("option", option);
+        intentService.putExtra("progress", progress);
+        intentService.putExtra("messenger", new Messenger(handler));
+        startService(intentService);
+    }
+
+    @Override
+    public void onRefresh() {
+        getSongList(this);
+    }
+
+    static class MessageHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+        }
     }
 }

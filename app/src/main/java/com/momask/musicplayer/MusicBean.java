@@ -8,7 +8,6 @@ public class MusicBean {
     private String data;
 
     public MusicBean(String musicName, String artist, String data) {
-        Log.e("MusicBean", "musicName:" + musicName + "artist:" + artist + "data:" + data);
         this.musicName = musicName;
         this.artist = artist;
         this.data = data;
